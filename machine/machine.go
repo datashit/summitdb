@@ -256,6 +256,17 @@ func (m *Machine) doScriptableCommand(a finn.Applier, conn redcon.Conn, cmd redc
 	switch qcmdlower(cmd.Args[0]) {
 	default:
 		return nil, finn.ErrUnknownCommand
+	case "shrink":
+
+		f, err := os.OpenFile(m.file+"-tmp", os.O_RDWR|os.O_CREATE, 0644)
+		if err != nil {
+			fmt.Println(err)
+		}
+		m.Snapshot(f)
+		f.Close()
+		conn.WriteString("OK " + m.file)
+
+		return  nil, nil
 	case "append":
 		// APPEND key value
 		return m.doAppend(a, conn, cmd, tx)
